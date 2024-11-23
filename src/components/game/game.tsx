@@ -1,5 +1,5 @@
-import { Board } from './board';
+import { Guesses } from './guesses';
 
 export function Game() {
-  return <Board />;
+  return <Guesses />;
 }
