@@ -25,7 +25,11 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    /* Types */
+    "types": [
+      "vitest/globals"
+    ]
   },
   "include": [
     "vite.config.ts"
