@@ -3,6 +3,7 @@ import prettier from 'eslint-plugin-prettier/recommended';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import tailwind from 'eslint-plugin-tailwindcss';
 import unusedImports from 'eslint-plugin-unused-imports';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -63,6 +64,14 @@ export default [
           },
         },
       ],
+    },
+  },
+  ...tailwind.configs['flat/recommended'],
+  {
+    settings: {
+      tailwindcss: {
+        callees: ['classnames', 'clsx', 'ctl', 'cva', 'tv', 'cn'],
+      },
     },
   },
 ];
