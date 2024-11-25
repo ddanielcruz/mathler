@@ -105,23 +105,6 @@ function tokensToEquation(tokens: Token[]): string {
 }
 
 /**
- * Checks if a string represents a valid mathematical equation.
- *
- * @param {string} equation - The equation string to validate
- * @returns {boolean} True if the equation is valid and can be evaluated
- * @example
- * isValidEquation("1+2") // returns true
- */
-function isValidEquation(equation: string): boolean {
-  try {
-    eval(equation);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
  * Finds all valid equations that are mathematically equivalent to the input equation.
  * An equation is considered cumulative if it:
  * 1. Uses the same numbers and operators as the input equation
@@ -171,11 +154,8 @@ export function getCumulativeEquations(equation: string): string[] {
 
       const newEquation = tokensToEquation(combinedTokens);
 
-      // Check if the equation is valid and yields the same result
-      if (
-        isValidEquation(newEquation) &&
-        Math.abs(eval(newEquation) - targetResult) < Number.EPSILON
-      ) {
+      // Check if the equation yields the same result
+      if (Math.abs(eval(newEquation) - targetResult) < Number.EPSILON) {
         results.add(newEquation);
       }
     }
