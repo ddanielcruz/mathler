@@ -4,19 +4,20 @@ import { cn } from '@/lib/tailwind';
 interface KeyboardKeyProps {
   value: string;
   wide?: boolean;
+  className?: string;
 }
 
-export function KeyboardKey({ value, wide = false }: KeyboardKeyProps) {
+export function KeyboardKey({ value, wide = false, className }: KeyboardKeyProps) {
   const { keys } = useGame();
   const keyState = value ? keys[value.toLowerCase() as GuessKey] : undefined;
 
   return (
     <button
       className={cn(
-        'flex h-12 items-center justify-center rounded-lg text-lg font-medium shadow-sm transition-colors',
+        'flex size-11 items-center justify-center rounded-lg text-lg font-medium shadow-sm transition-all sm:size-14 sm:text-xl',
         'focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700',
         'active:scale-95',
-        wide ? 'w-20' : 'w-12',
+        wide && 'w-20 sm:w-24',
         // Default state
         !keyState && 'bg-white text-black hover:brightness-95 active:brightness-90',
         // Game states
@@ -24,6 +25,7 @@ export function KeyboardKey({ value, wide = false }: KeyboardKeyProps) {
         keyState === 'present' &&
           'bg-yellow-500 text-white hover:bg-yellow-600 active:bg-yellow-700',
         keyState === 'correct' && 'bg-green-500 text-white hover:bg-green-600 active:bg-green-700',
+        className,
       )}
     >
       {value}

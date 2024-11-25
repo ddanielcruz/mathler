@@ -14,7 +14,7 @@ export function GuessKey({ value, active, className }: GuessKeyProps) {
   return (
     <div
       className={cn(
-        'flex size-12 items-center justify-center rounded-2xl text-4xl text-white transition-colors sm:size-14',
+        'flex size-11 items-center justify-center rounded-lg text-3xl text-white transition-colors sm:size-14 sm:text-4xl',
         // Default state (not played)
         !active && !keyState && 'bg-white/25',
         // Active input state
