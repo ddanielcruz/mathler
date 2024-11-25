@@ -7,6 +7,7 @@ interface GuessKeyProps {
   className?: string;
 }
 
+// BUG Use key state in the guess, not in keyboard. This causes duplicate keys to be marked as correct in the first appearance.
 export function GuessKey({ value, active, className }: GuessKeyProps) {
   const { keys } = useGame();
   const keyState = value ? keys[value.toLowerCase() as keyof typeof keys] : undefined;

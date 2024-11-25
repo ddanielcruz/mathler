@@ -3,6 +3,7 @@ import { DIGITS } from '@/contexts/game';
 import { KeyboardKey } from './keyboard-key';
 import { KeyboardOperators } from './keyboard-operators';
 
+// TODO Listen to left and right arrow keys to navigate between keys
 export function Keyboard() {
   return (
     <div className="flex flex-col items-center gap-1.5 sm:gap-2">
