@@ -1,15 +1,15 @@
-import { GuessKey, useGame } from '@/contexts/game';
+import { isGuessKey, KeyboardKey as KeyboardKeyType, useGame } from '@/contexts/game';
 import { cn } from '@/lib/tailwind';
 
 interface KeyboardKeyProps {
-  value: string;
+  value: KeyboardKeyType;
   wide?: boolean;
   className?: string;
 }
 
 export function KeyboardKey({ value, wide = false, className }: KeyboardKeyProps) {
   const { keys } = useGame();
-  const keyState = value ? keys[value.toLowerCase() as GuessKey] : undefined;
+  const keyState = isGuessKey(value) ? keys[value] : undefined;
 
   return (
     <button

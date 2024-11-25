@@ -5,7 +5,8 @@ export const KEYS = [...OPERATORS, ...DIGITS] as const;
 export type OperatorKey = (typeof OPERATORS)[number];
 export type DigitKey = (typeof DIGITS)[number];
 export type GuessKey = OperatorKey | DigitKey;
+export type KeyboardKey = GuessKey | 'Enter' | 'Delete';
 
-export function isKey(key: string): key is GuessKey {
-  return KEYS.includes(key as GuessKey);
+export function isGuessKey(value: unknown): value is GuessKey {
+  return typeof value === 'string' && KEYS.includes(value as GuessKey);
 }
