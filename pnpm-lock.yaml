@@ -8,21 +8,21 @@ importers:
 
   .:
     dependencies:
-      '@fontsource-variable/lexend':
-        specifier: ^5.1.1
-        version: 5.1.1
       '@fontsource-variable/rubik':
         specifier: ^5.1.0
         version: 5.1.0
-      '@fontsource/poppins':
-        specifier: ^5.1.0
-        version: 5.1.0
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       react:
         specifier: ^18.3.1
         version: 18.3.1
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
+      tailwind-merge:
+        specifier: ^2.5.4
+        version: 2.5.4
     devDependencies:
       '@commitlint/cli':
         specifier: ^19.6.0
@@ -57,9 +57,6 @@ importers:
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.49)
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
       eslint:
         specifier: ^9.13.0
         version: 9.15.0(jiti@1.21.6)
@@ -99,9 +96,6 @@ importers:
       postcss:
         specifier: ^8.4.49
         version: 8.4.49
-      tailwind-merge:
-        specifier: ^2.5.4
-        version: 2.5.4
       tailwindcss:
         specifier: ^3.4.15
         version: 3.4.15
@@ -403,14 +397,8 @@ packages:
     resolution: {integrity: sha512-2b/g5hRmpbb1o4GnTZax9N9m0FXzz9OV42ZzI4rDDMDuHUqigAiQCEWChBWCY4ztAGVRjoWT19v0yMmc5/L5kA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@fontsource-variable/lexend@5.1.1':
-    resolution: {integrity: sha512-ixzYkzPiJRBAxYPsjIUBLBjS1zXBMF75qQwoVyEPWOtt5uyEHdT8jTpbh/b4ibsnQvqEVb/CToifmEXJfvShag==}
-
   '@fontsource-variable/rubik@5.1.0':
     resolution: {integrity: sha512-gmh3xts3ARd0ktWW/VX+MVxhJr6TxHVeGLsQEaQXDVxvuNjn5WRucfKfXK3EVN2BcgRxUe1Fctv/v9zgEd0DUg==}
-
-  '@fontsource/poppins@5.1.0':
-    resolution: {integrity: sha512-tpLXlnNi2fwQjiipvuj4uNFHCdoLA8izRsKdoexZuEzjx0r/g1aKLf4ta6lFgF7L+/+AFdmaXFlUwwvmDzYH+g==}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -2654,11 +2642,7 @@ snapshots:
     dependencies:
       levn: 0.4.1
 
-  '@fontsource-variable/lexend@5.1.1': {}
-
   '@fontsource-variable/rubik@5.1.0': {}
-
-  '@fontsource/poppins@5.1.0': {}
 
   '@humanfs/core@0.19.1': {}
 
