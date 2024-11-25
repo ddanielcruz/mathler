@@ -1,46 +1,31 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 
+import { getDailyEquation } from '@/lib/equations';
+
 import { GameState } from './types';
 
 const GameContext = createContext<GameState | null>(null);
 
 const initialGameState: GameState = {
-  equationResult: '75',
-  guesses: Array.from({ length: 6 }).map((_, index) => {
-    if (index === 0) {
-      return {
-        guess: '7*10+5',
-        state: 'submitted',
-      };
-    }
-
-    if (index === 1) {
-      return {
-        guess: '17',
-        state: 'in-progress',
-      };
-    }
-
-    return {
-      guess: '',
-      state: 'not-played',
-    };
-  }),
-  keys: {
-    '0': 'absent',
-    '1': 'present',
-    '5': 'absent',
-    '7': 'present',
-    '*': 'present',
-    '+': 'correct',
-    '-': 'absent',
-  },
+  equation: '',
+  equationResult: 0,
+  guesses: Array.from({ length: 6 }).map((_, index) => ({
+    guess: '',
+    state: index === 0 ? 'in-progress' : 'not-played',
+  })),
+  keys: {},
 };
 
 export function GameProvider({ children }: { children: ReactNode }) {
-  const [gameState, _setGameState] = useState(initialGameState);
+  const { equation, result } = getDailyEquation();
+  const [guesses, _setGuesses] = useState(initialGameState.guesses);
+  const [keys, _setKeys] = useState(initialGameState.keys);
 
-  return <GameContext.Provider value={gameState}>{children}</GameContext.Provider>;
+  return (
+    <GameContext.Provider value={{ guesses, keys, equation, equationResult: result }}>
+      {children}
+    </GameContext.Provider>
+  );
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
