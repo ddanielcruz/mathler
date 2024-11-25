@@ -7,7 +7,6 @@ import { GameState } from './types';
 const GameContext = createContext<GameState | null>(null);
 
 const initialGameState: GameState = {
-  equation: '',
   equationResult: 0,
   guesses: Array.from({ length: 6 }).map((_, index) => ({
     guess: '',
@@ -17,12 +16,12 @@ const initialGameState: GameState = {
 };
 
 export function GameProvider({ children }: { children: ReactNode }) {
-  const { equation, result } = getDailyEquation();
+  const { result } = getDailyEquation();
   const [guesses, _setGuesses] = useState(initialGameState.guesses);
   const [keys, _setKeys] = useState(initialGameState.keys);
 
   return (
-    <GameContext.Provider value={{ guesses, keys, equation, equationResult: result }}>
+    <GameContext.Provider value={{ guesses, keys, equationResult: result }}>
       {children}
     </GameContext.Provider>
   );

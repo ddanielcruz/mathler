@@ -12,6 +12,5 @@ export interface Guess {
 export interface GameState {
   guesses: Guess[];
   keys: Partial<Record<GuessKey, GuessKeyState>>;
-  equation: string;
   equationResult: number;
 }
