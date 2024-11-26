@@ -11,7 +11,7 @@ const GameContext = createContext<GameContextType | null>(null);
 const initialGameState: GameState = {
   equationResult: 0,
   guesses: Array.from({ length: GUESSES_COUNT }).map((_, index) => ({
-    guess: '',
+    guess: [],
     state: index === 0 ? 'in-progress' : 'not-played',
   })),
   keys: {},
@@ -31,17 +31,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
       }
 
       // Append key to current guess
-      let updatedGuess = currentGuess.guess;
+      const updatedGuess = [...currentGuess.guess];
       if (isGuessKey(key)) {
-        updatedGuess = `${currentGuess.guess}${key}`.slice(0, GUESS_LENGTH);
+        if (updatedGuess.length < GUESS_LENGTH) {
+          updatedGuess.push({ key, state: null });
+        }
       } else if (key === 'Enter') {
         // TODO Submit guess
       } else if (key === 'Delete') {
         // Delete last key
-        updatedGuess = updatedGuess.slice(0, -1);
+        updatedGuess.pop();
       }
 
-      // Update the guess
+      // Update the guesses
       setGuesses((prevGuesses) =>
         prevGuesses.map((guess) =>
           guess === currentGuess ? { ...guess, guess: updatedGuess } : guess,

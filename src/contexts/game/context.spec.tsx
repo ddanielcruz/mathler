@@ -3,15 +3,33 @@ import { ReactNode } from 'react';
 
 import { GUESS_LENGTH, GUESSES_COUNT } from './constants';
 import { GameProvider, useGame } from './context';
+import { GuessKey } from './keys';
+import { Guess, GuessState, GuessValueKey } from './types';
 
 function wrapper({ children }: { children: ReactNode }) {
   return <GameProvider>{children}</GameProvider>;
 }
 
+function createEmptyGuess(state: GuessState): Guess {
+  return { guess: [], state };
+}
+
+function createGuessKey(key: GuessKey, state: GuessValueKey['state'] = null): GuessValueKey {
+  return { key, state };
+}
+
 describe('GameContext', () => {
   describe('useGame', () => {
     it('should throw an error if used outside of a GameProvider', () => {
+      // Temporarily mock console.error
+      const consoleSpy = vi.spyOn(console, 'error');
+      consoleSpy.mockImplementation(() => undefined);
+
+      // Run the test
       expect(() => renderHook(() => useGame())).toThrow();
+
+      // Restore console.error
+      consoleSpy.mockRestore();
     });
   });
 
@@ -20,10 +38,10 @@ describe('GameContext', () => {
       const { result } = renderHook(() => useGame(), { wrapper });
 
       expect(result.current.guesses).toHaveLength(GUESSES_COUNT);
-      expect(result.current.guesses[0]).toEqual({ guess: '', state: 'in-progress' });
+      expect(result.current.guesses[0]).toEqual(createEmptyGuess('in-progress'));
       result.current.guesses
         .slice(1)
-        .forEach((guess) => expect(guess).toEqual({ guess: '', state: 'not-played' }));
+        .forEach((guess) => expect(guess).toEqual(createEmptyGuess('not-played')));
       expect(result.current.keys).toEqual({});
     });
   });
@@ -35,7 +53,12 @@ describe('GameContext', () => {
       act(() => result.current.onKeyPress('1'));
       act(() => result.current.onKeyPress('2'));
       act(() => result.current.onKeyPress('3'));
-      expect(result.current.guesses[0].guess).toBe('123');
+
+      expect(result.current.guesses[0].guess).toEqual([
+        createGuessKey('1'),
+        createGuessKey('2'),
+        createGuessKey('3'),
+      ]);
     });
 
     it('should append operators to the current guess', () => {
@@ -45,7 +68,11 @@ describe('GameContext', () => {
       act(() => result.current.onKeyPress('+'));
       act(() => result.current.onKeyPress('2'));
 
-      expect(result.current.guesses[0].guess).toBe('1+2');
+      expect(result.current.guesses[0].guess).toEqual([
+        createGuessKey('1'),
+        createGuessKey('+'),
+        createGuessKey('2'),
+      ]);
     });
 
     it('should delete the last character when Delete is pressed', () => {
@@ -55,7 +82,7 @@ describe('GameContext', () => {
       act(() => result.current.onKeyPress('2'));
       act(() => result.current.onKeyPress('Delete'));
 
-      expect(result.current.guesses[0].guess).toBe('1');
+      expect(result.current.guesses[0].guess).toEqual([createGuessKey('1')]);
     });
 
     it(`should limit the guess to ${GUESS_LENGTH} characters`, () => {
@@ -70,7 +97,14 @@ describe('GameContext', () => {
       act(() => result.current.onKeyPress('-'));
       act(() => result.current.onKeyPress('4')); // This should be ignored
 
-      expect(result.current.guesses[0].guess).toBe('1+2*3-');
+      expect(result.current.guesses[0].guess).toEqual([
+        createGuessKey('1'),
+        createGuessKey('+'),
+        createGuessKey('2'),
+        createGuessKey('*'),
+        createGuessKey('3'),
+        createGuessKey('-'),
+      ]);
     });
 
     it('should only modify the in-progress guess', () => {
@@ -88,21 +122,21 @@ describe('GameContext', () => {
       act(() => result.current.onKeyPress('3'));
       act(() => result.current.onKeyPress('4'));
 
-      expect(result.current.guesses[0].guess).toBe('12');
-      expect(result.current.guesses[1].guess).toBe('34');
+      expect(result.current.guesses[0].guess).toEqual([createGuessKey('1'), createGuessKey('2')]);
+      expect(result.current.guesses[1].guess).toEqual([createGuessKey('3'), createGuessKey('4')]);
     });
 
     it('should do nothing if there is no in-progress guess', () => {
       const { result } = renderHook(() => useGame(), { wrapper });
 
-      // Set all guesses to completed using the proper state update
+      // Set all guesses to completed
       result.current.guesses.forEach((guess) => {
         guess.state = 'correct';
       });
 
       act(() => result.current.onKeyPress('1'));
 
-      expect(result.current.guesses[0].guess).toBe('');
+      expect(result.current.guesses[0].guess).toEqual([]);
     });
 
     // TODO Add tests for Enter key functionality once guess submission is implemented

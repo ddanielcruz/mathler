@@ -1,33 +1,30 @@
-import { useGame } from '@/contexts/game';
+import { GuessKeyState } from '@/contexts/game';
 import { cn } from '@/lib/tailwind';
 
 interface GuessKeyProps {
   value: string;
+  state: GuessKeyState | null;
   active: boolean;
   className?: string;
 }
 
-// BUG Use key state in the guess, not in keyboard. This causes duplicate keys to be marked as correct in the first appearance.
-export function GuessKey({ value, active, className }: GuessKeyProps) {
-  const { keys } = useGame();
-  const keyState = value ? keys[value.toLowerCase() as keyof typeof keys] : undefined;
-
+export function GuessKey({ value, state, active, className }: GuessKeyProps) {
   return (
     <div
       className={cn(
         'flex size-11 items-center justify-center rounded-lg text-3xl text-white transition-colors sm:size-14 sm:text-4xl',
         // Default state (not played)
-        !active && !keyState && 'bg-white/25',
+        !active && !state && 'bg-white/25',
         // Active input state
         active && 'bg-white text-blue-700 opacity-100',
         // Game states
-        !active && keyState === 'absent' && 'bg-gray-500',
-        !active && keyState === 'present' && 'bg-yellow-500',
-        !active && keyState === 'correct' && 'bg-green-500',
+        !active && state === 'absent' && 'bg-gray-500',
+        !active && state === 'present' && 'bg-yellow-500',
+        !active && state === 'correct' && 'bg-green-500',
         className,
       )}
     >
-      <span>{value}</span>
+      {value}
     </div>
   );
 }
