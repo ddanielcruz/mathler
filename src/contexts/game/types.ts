@@ -1,4 +1,4 @@
-import { type GuessKey } from './keys';
+import { type GuessKey, KeyboardKey } from './keys';
 
 export type GuessState = 'in-progress' | 'submitted' | 'correct' | 'not-played';
 
@@ -14,3 +14,9 @@ export interface GameState {
   keys: Partial<Record<GuessKey, GuessKeyState>>;
   equationResult: number;
 }
+
+export interface GameActions {
+  onKeyPress: (key: KeyboardKey) => void;
+}
+
+export type GameContextType = GameState & GameActions;
