@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
 
-import { getDailyEquation } from '@/lib/equations';
+import { getDailyEquation } from '@/utils/equations';
 
 import { GUESS_LENGTH, GUESSES_COUNT } from './constants';
 import { isGuessKey, KeyboardKey } from './keys';

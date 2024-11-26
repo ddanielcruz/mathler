@@ -1,6 +1,8 @@
 import { OperatorKey, OPERATORS } from '@/contexts/game';
 import equations from '@/data/equations.json';
 
+import { getTodayTimestamp } from './dates';
+
 export interface DailyEquation {
   equation: string;
   result: number;
@@ -18,9 +20,7 @@ export interface DailyEquation {
  */
 export function getDailyEquation(): DailyEquation {
   // Get the timestamp of the start of today
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const timestamp = today.getTime();
+  const timestamp = getTodayTimestamp();
 
   // Use the timestamp to get the equation
   const equation = equations[timestamp % equations.length];
