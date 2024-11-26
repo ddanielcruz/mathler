@@ -9,6 +9,12 @@ function wrapper({ children }: { children: ReactNode }) {
 }
 
 describe('GameContext', () => {
+  describe('useGame', () => {
+    it('should throw an error if used outside of a GameProvider', () => {
+      expect(() => renderHook(() => useGame())).toThrow();
+    });
+  });
+
   describe('initial state', () => {
     it('should initialize with correct default values', () => {
       const { result } = renderHook(() => useGame(), { wrapper });
