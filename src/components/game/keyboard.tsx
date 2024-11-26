@@ -1,10 +1,21 @@
-import { DIGITS } from '@/contexts/game';
+import { useEventListener } from 'usehooks-ts';
+
+import { DIGITS, isKeyboardKey, useGame } from '@/contexts/game';
 
 import { KeyboardKey } from './keyboard-key';
 import { KeyboardOperators } from './keyboard-operators';
 
 // TODO Listen to left and right arrow keys to navigate between keys
 export function Keyboard() {
+  const { onKeyPress } = useGame();
+
+  useEventListener('keydown', (event) => {
+    const key = event.key === 'Backspace' ? 'Delete' : event.key;
+    if (isKeyboardKey(key)) {
+      onKeyPress(key);
+    }
+  });
+
   return (
     <div className="flex flex-col items-center gap-1.5 sm:gap-2">
       {/* Digits row */}

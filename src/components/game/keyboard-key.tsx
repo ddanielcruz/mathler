@@ -8,8 +8,12 @@ interface KeyboardKeyProps {
 }
 
 export function KeyboardKey({ value, wide = false, className }: KeyboardKeyProps) {
-  const { keys } = useGame();
+  const { keys, onKeyPress } = useGame();
   const keyState = isGuessKey(value) ? keys[value] : undefined;
+
+  function handleClick() {
+    onKeyPress(value);
+  }
 
   return (
     <button
@@ -27,6 +31,7 @@ export function KeyboardKey({ value, wide = false, className }: KeyboardKeyProps
         keyState === 'correct' && 'bg-green-500 text-white hover:bg-green-600 active:bg-green-700',
         className,
       )}
+      onClick={handleClick}
     >
       {value}
     </button>
