@@ -2,10 +2,10 @@ import { act, renderHook } from '@testing-library/react';
 import { ReactNode } from 'react';
 
 import { GUESS_LENGTH, GUESSES_COUNT } from './constants';
-import { GameProvider, useGame } from './context';
+import { useGame } from './hooks';
 import { GuessKey } from './keys';
+import { GameProvider } from './provider';
 import { Guess, GuessState, GuessValueKey } from './types';
-
 function wrapper({ children }: { children: ReactNode }) {
   return <GameProvider>{children}</GameProvider>;
 }
@@ -18,21 +18,7 @@ function createGuessKey(key: GuessKey, state: GuessValueKey['state'] = null): Gu
   return { key, state };
 }
 
-describe('GameContext', () => {
-  describe('useGame', () => {
-    it('should throw an error if used outside of a GameProvider', () => {
-      // Temporarily mock console.error
-      const consoleSpy = vi.spyOn(console, 'error');
-      consoleSpy.mockImplementation(() => undefined);
-
-      // Run the test
-      expect(() => renderHook(() => useGame())).toThrow();
-
-      // Restore console.error
-      consoleSpy.mockRestore();
-    });
-  });
-
+describe('GameProvider', () => {
   describe('initial state', () => {
     it('should initialize with correct default values', () => {
       const { result } = renderHook(() => useGame(), { wrapper });

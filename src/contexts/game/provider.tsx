@@ -1,12 +1,11 @@
-import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
+import { ReactNode, useCallback, useState } from 'react';
 
 import { getDailyEquation } from '@/utils/equations';
 
 import { GUESS_LENGTH, GUESSES_COUNT } from './constants';
+import { GameContext } from './context';
 import { isGuessKey, KeyboardKey } from './keys';
-import { GameContextType, GameState } from './types';
-
-const GameContext = createContext<GameContextType | null>(null);
+import { GameState } from './types';
 
 const initialGameState: GameState = {
   equationResult: 0,
@@ -65,14 +64,4 @@ export function GameProvider({ children }: { children: ReactNode }) {
       {children}
     </GameContext.Provider>
   );
-}
-
-// eslint-disable-next-line react-refresh/only-export-components
-export function useGame() {
-  const context = useContext(GameContext);
-  if (!context) {
-    throw new Error('useGame must be used within a GameProvider');
-  }
-
-  return context;
 }
