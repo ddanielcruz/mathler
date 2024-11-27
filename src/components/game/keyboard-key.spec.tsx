@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event';
 import { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { GameContext } from '@/contexts/game';
+import { GameContext, initialGameState } from '@/contexts/game';
 import { GuessKeyState } from '@/contexts/game/types';
 
 import { KeyboardKey } from './keyboard-key';
@@ -18,15 +18,7 @@ function wrapper({
   keys?: Record<string, GuessKeyState>;
 }) {
   return (
-    <GameContext.Provider
-      value={{
-        guesses: [],
-        keys,
-        equationResult: 0,
-        error: null,
-        onKeyPress,
-      }}
-    >
+    <GameContext.Provider value={{ ...initialGameState, keys, onKeyPress }}>
       {children}
     </GameContext.Provider>
   );

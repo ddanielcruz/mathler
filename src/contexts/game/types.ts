@@ -16,15 +16,18 @@ export interface Guess {
   state: GuessState;
 }
 
-export interface GameState {
+export type GameStatus = 'in-progress' | 'win' | 'lose';
+
+export interface GameContextState {
   guesses: Guess[];
   keys: Partial<Record<GuessKey, KeyboardKeyState>>;
   equationResult: number;
   error: string | null;
+  status: GameStatus;
 }
 
-export interface GameActions {
+export interface GameContextActions {
   onKeyPress: (key: KeyboardKey) => void;
 }
 
-export type GameContextType = GameState & GameActions;
+export type GameContextType = GameContextState & GameContextActions;

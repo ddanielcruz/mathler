@@ -2,28 +2,24 @@ import { ReactNode, useCallback, useMemo, useState } from 'react';
 
 import { getDailyEquation } from '@/utils/equations';
 
-import { GUESS_LENGTH, GUESSES_COUNT } from './constants';
-import { GameContext } from './context';
+import { GUESS_LENGTH } from './constants';
+import { GameContext, initialGameState } from './context';
 import { isGuessKey, KeyboardKey } from './keys';
-import { GameState, Guess } from './types';
+import { Guess } from './types';
 import { getGuessSolutionMap, isValidEquation } from './validation';
-
-// TODO Move to separate file
-const initialGameState: GameState = {
-  equationResult: 0,
-  guesses: Array.from({ length: GUESSES_COUNT }).map((_, index) => ({
-    guess: [],
-    state: index === 0 ? 'in-progress' : 'not-played',
-  })),
-  keys: {},
-  error: null,
-};
 
 export function GameProvider({ children }: { children: ReactNode }) {
   const { equation, cumulativeEquations, result: equationResult } = getDailyEquation();
   const [guesses, setGuesses] = useState(initialGameState.guesses);
   const [keys, setKeys] = useState(initialGameState.keys);
   const [error, setError] = useState(initialGameState.error);
+  const status = useMemo(() => {
+    if (guesses.some((guess) => guess.state === 'correct')) {
+      return 'win';
+    }
+
+    return guesses.some((guess) => guess.state === 'in-progress') ? 'in-progress' : 'lose';
+  }, [guesses]);
 
   const currentGuess = useMemo(
     () => guesses.find((guess) => guess.state === 'in-progress') ?? null,
@@ -129,6 +125,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         keys,
         equationResult,
         error,
+        status,
         onKeyPress: handleKeyPress,
       }}
     >

@@ -25,6 +25,8 @@ function createGuessKey(key: GuessKey, state: GuessValueKey['state'] = null): Gu
 }
 
 describe('GameProvider', () => {
+  const { equation, result: equationResult, cumulativeEquations } = getDailyEquation();
+
   afterEach(() => {
     isValidEquationSpy.mockClear();
   });
@@ -103,23 +105,19 @@ describe('GameProvider', () => {
       ]);
     });
 
-    it.todo('should only modify the in-progress guess', () => {
+    it('should only modify the in-progress guess', () => {
       isValidEquationSpy.mockReturnValueOnce(null);
       const { result } = renderHook(() => useGame(), { wrapper });
 
       // Fill first guess and submit it
-      act(() => {
-        result.current.onKeyPress('1');
-        result.current.onKeyPress('+');
-        result.current.onKeyPress('2');
-        result.current.onKeyPress('Enter');
-      });
+      act(() => result.current.onKeyPress('1'));
+      act(() => result.current.onKeyPress('+'));
+      act(() => result.current.onKeyPress('2'));
+      act(() => result.current.onKeyPress('Enter'));
 
       // Try to modify the submitted guess by pressing keys
-      act(() => {
-        result.current.onKeyPress('3');
-        result.current.onKeyPress('4');
-      });
+      act(() => result.current.onKeyPress('3'));
+      act(() => result.current.onKeyPress('4'));
 
       // Verify the submitted guess remains unchanged
       expect(result.current.guesses[0].guess).toEqual([
@@ -152,8 +150,6 @@ describe('GameProvider', () => {
     });
 
     describe('handleEnter', () => {
-      const { equation, result: equationResult, cumulativeEquations } = getDailyEquation();
-
       it('should show error when equation validation fails', () => {
         const mockError = 'Mock validation error';
         isValidEquationSpy.mockReturnValueOnce(mockError);
@@ -311,6 +307,47 @@ describe('GameProvider', () => {
 
         expect(result.current.keys).toEqual({});
       });
+    });
+  });
+
+  describe('status', () => {
+    it('should be "win" when all guesses are correct', () => {
+      const { result } = renderHook(() => useGame(), { wrapper });
+
+      // Submit correct guess
+      equation.split('').forEach((key) => {
+        act(() => result.current.onKeyPress(key as GuessKey));
+      });
+      act(() => result.current.onKeyPress('Enter'));
+
+      expect(result.current.status).toBe('win');
+    });
+
+    it('should be "lose" when all guesses are submitted but none are correct', () => {
+      const { result } = renderHook(() => useGame(), { wrapper });
+
+      // Submit incorrect guesses
+      for (let i = 0; i < GUESSES_COUNT; i++) {
+        isValidEquationSpy.mockReturnValueOnce(null);
+        act(() => result.current.onKeyPress('Enter'));
+      }
+
+      expect(result.current.status).toBe('lose');
+    });
+
+    it('should be "in-progress" when there is an in-progress guess', () => {
+      isValidEquationSpy.mockReturnValueOnce(null);
+      const { result } = renderHook(() => useGame(), { wrapper });
+
+      expect(result.current.status).toBe('in-progress');
+
+      // Type a guess
+      act(() => result.current.onKeyPress('1'));
+      act(() => result.current.onKeyPress('+'));
+      act(() => result.current.onKeyPress('2'));
+      act(() => result.current.onKeyPress('Enter'));
+
+      expect(result.current.status).toBe('in-progress');
     });
   });
 });

@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { describe, expect, it } from 'vitest';
 
-import { GameContext } from '@/contexts/game';
+import { GameContext, initialGameState } from '@/contexts/game';
 
 import { Game } from './game';
 
@@ -10,10 +10,8 @@ function wrapper({ children }: { children: ReactNode }) {
   return (
     <GameContext.Provider
       value={{
-        guesses: [],
-        keys: {},
+        ...initialGameState,
         equationResult: 42,
-        error: null,
         onKeyPress: () => {},
       }}
     >

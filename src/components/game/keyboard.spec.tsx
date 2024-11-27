@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event';
 import { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { GameContext } from '@/contexts/game';
+import { GameContext, initialGameState } from '@/contexts/game';
 import { DIGITS } from '@/contexts/game';
 
 import { Keyboard } from './keyboard';
@@ -16,15 +16,7 @@ function wrapper({
   onKeyPress?: (key: string) => void;
 }) {
   return (
-    <GameContext.Provider
-      value={{
-        guesses: [],
-        keys: {},
-        equationResult: 0,
-        onKeyPress,
-        error: null,
-      }}
-    >
+    <GameContext.Provider value={{ ...initialGameState, onKeyPress }}>
       {children}
     </GameContext.Provider>
   );
