@@ -11,6 +11,8 @@ interface GuessKeyProps {
 export function GuessKey({ value, state, active, className }: GuessKeyProps) {
   return (
     <div
+      data-testid="guess-key"
+      data-state={state}
       className={cn(
         'flex size-11 items-center justify-center rounded-lg text-3xl text-white transition-colors sm:size-14 sm:text-4xl',
         // Default state (not played)

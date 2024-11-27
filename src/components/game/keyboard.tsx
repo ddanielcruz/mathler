@@ -17,7 +17,7 @@ export function Keyboard() {
   });
 
   return (
-    <div className="flex flex-col items-center gap-1.5 sm:gap-2">
+    <div className="flex flex-col items-center gap-1.5 sm:gap-2" data-testid="keyboard">
       {/* Digits row */}
       <div className="grid grid-cols-7 gap-1.5 sm:flex">
         {DIGITS.map((digit) => (

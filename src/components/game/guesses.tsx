@@ -6,7 +6,7 @@ export function Guesses() {
   const { guesses } = useGame();
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1.5" data-testid="guesses">
       {guesses.map((guess, index) => (
         <Guess key={index} guess={guess} />
       ))}

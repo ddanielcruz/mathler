@@ -10,7 +10,9 @@ export function Game() {
     <div className="flex flex-col items-center gap-8">
       <h2 className="text-center text-xl font-medium text-white">
         Find the hidden calculation that{' '}
-        <div className="inline-flex rounded-lg bg-amber-500 px-1">equals {equationResult}</div>
+        <div className="mx-auto w-fit rounded-lg bg-amber-500 px-1 sm:inline-flex">
+          equals {equationResult}
+        </div>
       </h2>
 
       <Guesses />

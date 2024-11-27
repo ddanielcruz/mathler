@@ -17,6 +17,8 @@ export function KeyboardKey({ value, wide = false, className }: KeyboardKeyProps
 
   return (
     <button
+      data-testid="keyboard-key"
+      data-state={keyState}
       className={cn(
         'flex size-11 items-center justify-center rounded-lg text-lg font-medium shadow-sm transition-all sm:size-14 sm:text-xl',
         'focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700',
