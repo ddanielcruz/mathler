@@ -10,6 +10,10 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./tests/setup.ts'],
     environment: 'happy-dom',
-    // TODO Setup coverage reporter
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    coverage: {
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/app.tsx', 'src/main.tsx', 'src/**/*.d.ts'],
+    },
   },
 });
