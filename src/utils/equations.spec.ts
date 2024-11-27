@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import equations from '@/data/equations.json';
 
-import { getCumulativeEquations, getDailyEquation } from './equations';
+import { getCumulativeEquations, getDailyEquation, tokenizeEquation } from './equations';
 
 describe('equations', () => {
   beforeEach(() => {
@@ -144,6 +144,45 @@ describe('equations', () => {
       results.forEach((equation) => {
         expect(Math.abs(eval(equation) - 5)).toBeLessThan(Number.EPSILON);
       });
+    });
+  });
+
+  describe('tokenizeEquation', () => {
+    it('tokenizes simple equation into numbers and operators', () => {
+      const tokens = tokenizeEquation('1+2');
+      expect(tokens).toEqual([1, '+', 2]);
+    });
+
+    it('handles multiple operators', () => {
+      const tokens = tokenizeEquation('1+2*3');
+      expect(tokens).toEqual([1, '+', 2, '*', 3]);
+    });
+
+    it('handles multi-digit numbers', () => {
+      const tokens = tokenizeEquation('12+34');
+      expect(tokens).toEqual([12, '+', 34]);
+    });
+
+    describe('with preserveStringNumbers', () => {
+      it('preserves leading zeros when preserveStringNumbers is true', () => {
+        const tokens = tokenizeEquation('01+02', true);
+        expect(tokens).toEqual(['01', '+', '02']);
+      });
+
+      it('converts to numbers when preserveStringNumbers is false', () => {
+        const tokens = tokenizeEquation('01+02', false);
+        expect(tokens).toEqual([1, '+', 2]);
+      });
+
+      it('preserves single-digit numbers as strings', () => {
+        const tokens = tokenizeEquation('1+2', true);
+        expect(tokens).toEqual(['1', '+', '2']);
+      });
+    });
+
+    it('handles all operator types', () => {
+      const tokens = tokenizeEquation('1+2-3*4/5');
+      expect(tokens).toEqual([1, '+', 2, '-', 3, '*', 4, '/', 5]);
     });
   });
 });

@@ -1,4 +1,4 @@
-import { OperatorKey, OPERATORS } from '@/contexts/game';
+import { isOperatorKey, OperatorKey } from '@/contexts/game';
 import equations from '@/data/equations.json';
 
 import { getTodayTimestamp } from './dates';
@@ -32,26 +32,34 @@ export function getDailyEquation(): DailyEquation {
   return { equation, result, cumulativeEquations };
 }
 
-type Token = number | (typeof OPERATORS)[number];
+type Token<T extends boolean = false> = T extends true
+  ? string | OperatorKey
+  : number | OperatorKey;
 
 /**
  * Converts a string equation into an array of tokens (numbers and operators).
  *
  * @param {string} equation - The equation string to tokenize (e.g., "1+2*3")
- * @returns {Token[]} An array of tokens where each token is either a number or an operator
+ * @param {boolean} [preserveStringNumbers=false] - If true, keeps numbers as strings to preserve leading zeros
+ * @returns {Token[]} An array of tokens where each token is either a number/string and operator
  * @example
  * tokenizeEquation("1+2*3") // returns [1, "+", 2, "*", 3]
+ * tokenizeEquation("01+2*3", true) // returns ["01", "+", "2", "*", "3"]
  */
-function tokenizeEquation(equation: string): Token[] {
-  const tokens: Token[] = [];
+export function tokenizeEquation<T extends boolean = false>(
+  equation: string,
+  preserveStringNumbers?: T,
+): Token<T>[] {
+  const tokens: (string | OperatorKey)[] = [];
   let currentNumber = '';
 
   for (const char of equation) {
-    if (OPERATORS.includes(char as OperatorKey)) {
+    if (isOperatorKey(char)) {
       if (currentNumber) {
-        tokens.push(Number(currentNumber));
+        tokens.push(currentNumber);
         currentNumber = '';
       }
+
       tokens.push(char as OperatorKey);
     } else if (/\d/.test(char)) {
       currentNumber += char;
@@ -59,10 +67,14 @@ function tokenizeEquation(equation: string): Token[] {
   }
 
   if (currentNumber) {
-    tokens.push(Number(currentNumber));
+    tokens.push(currentNumber);
   }
 
-  return tokens;
+  return (
+    preserveStringNumbers
+      ? tokens
+      : tokens.map((token) => (isOperatorKey(token) ? token : Number(token)))
+  ) as Token<T>[];
 }
 
 /**
@@ -100,7 +112,7 @@ function generatePermutations<T>(arr: T[]): T[][] {
  * @example
  * tokensToEquation([1, "+", 2]) // returns "1+2"
  */
-function tokensToEquation(tokens: Token[]): string {
+function tokensToEquation<T extends boolean = false>(tokens: Token<T>[]): string {
   return tokens.join('');
 }
 
@@ -121,40 +133,34 @@ function tokensToEquation(tokens: Token[]): string {
  */
 export function getCumulativeEquations(equation: string): string[] {
   const tokens = tokenizeEquation(equation);
-  const numbers = tokens.filter((token) => typeof token === 'number') as number[];
-  const operators = tokens.filter((token) => typeof token === 'string') as OperatorKey[];
+  const numbers = tokens.filter((token): token is number => typeof token === 'number');
+  const operators = tokens.filter(
+    (token): token is OperatorKey => typeof token === 'string',
+  ) as OperatorKey[];
 
-  // Get the target result
   const targetResult = eval(equation);
-
-  // Generate all possible number permutations
   const numberPermutations = generatePermutations(numbers);
-
-  // Generate all possible operator permutations
   const operatorPermutations = generatePermutations(operators);
 
   const results = new Set<string>();
 
-  // Combine numbers and operators to form equations
   for (const numberPerm of numberPermutations) {
     for (const operatorPerm of operatorPermutations) {
-      const combinedTokens: Token[] = [];
+      const combinedTokens: Token<false>[] = [];
       let numIndex = 0;
       let opIndex = 0;
 
-      // Reconstruct the equation
       while (numIndex < numberPerm.length || opIndex < operatorPerm.length) {
         if (numIndex < numberPerm.length) {
           combinedTokens.push(numberPerm[numIndex++]);
         }
         if (opIndex < operatorPerm.length) {
-          combinedTokens.push(operatorPerm[opIndex++] as OperatorKey);
+          combinedTokens.push(operatorPerm[opIndex++]);
         }
       }
 
       const newEquation = tokensToEquation(combinedTokens);
 
-      // Check if the equation yields the same result
       if (Math.abs(eval(newEquation) - targetResult) < Number.EPSILON) {
         results.add(newEquation);
       }
