@@ -23,6 +23,7 @@ function wrapper({
         guesses: [],
         keys,
         equationResult: 0,
+        error: null,
         onKeyPress,
       }}
     >

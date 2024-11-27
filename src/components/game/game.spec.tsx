@@ -13,6 +13,7 @@ function wrapper({ children }: { children: ReactNode }) {
         guesses: [],
         keys: {},
         equationResult: 42,
+        error: null,
         onKeyPress: () => {},
       }}
     >

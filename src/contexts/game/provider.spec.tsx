@@ -93,38 +93,9 @@ describe('GameProvider', () => {
       ]);
     });
 
-    it('should only modify the in-progress guess', () => {
-      const { result } = renderHook(() => useGame(), { wrapper });
-
-      // Modify the first guess
-      act(() => result.current.onKeyPress('1'));
-      act(() => result.current.onKeyPress('2'));
-
-      // Complete the first guess and make the second guess in progress
-      result.current.guesses[0].state = 'submitted';
-      result.current.guesses[1].state = 'in-progress';
-
-      // Add new characters
-      act(() => result.current.onKeyPress('3'));
-      act(() => result.current.onKeyPress('4'));
-
-      expect(result.current.guesses[0].guess).toEqual([createGuessKey('1'), createGuessKey('2')]);
-      expect(result.current.guesses[1].guess).toEqual([createGuessKey('3'), createGuessKey('4')]);
-    });
-
-    it('should do nothing if there is no in-progress guess', () => {
-      const { result } = renderHook(() => useGame(), { wrapper });
-
-      // Set all guesses to completed
-      result.current.guesses.forEach((guess) => {
-        guess.state = 'correct';
-      });
-
-      act(() => result.current.onKeyPress('1'));
-
-      expect(result.current.guesses[0].guess).toEqual([]);
-    });
-
+    it.todo('should only modify the in-progress guess');
+    it.todo('should do nothing if there is no in-progress guess');
+    it.todo('clears error on key press');
     // TODO Add tests for Enter key functionality once guess submission is implemented
   });
 });

@@ -22,6 +22,7 @@ function wrapper({
         keys: {},
         equationResult: 0,
         onKeyPress,
+        error: null,
       }}
     >
       {children}

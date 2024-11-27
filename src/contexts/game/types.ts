@@ -20,6 +20,7 @@ export interface GameState {
   guesses: Guess[];
   keys: Partial<Record<GuessKey, KeyboardKeyState>>;
   equationResult: number;
+  error: string | null;
 }
 
 export interface GameActions {
