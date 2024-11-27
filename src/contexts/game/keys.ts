@@ -8,11 +8,16 @@ export type GuessKey = OperatorKey | DigitKey;
 export type ControlKey = (typeof CONTROL_KEYS)[number];
 export type KeyboardKey = GuessKey | ControlKey;
 
+export function isOperatorKey(value: unknown): value is OperatorKey {
+  return typeof value === 'string' && OPERATORS.includes(value as OperatorKey);
+}
+
+export function isDigitKey(value: unknown): value is DigitKey {
+  return typeof value === 'string' && DIGITS.includes(value as DigitKey);
+}
+
 export function isGuessKey(value: unknown): value is GuessKey {
-  return (
-    typeof value === 'string' &&
-    (OPERATORS.includes(value as OperatorKey) || DIGITS.includes(value as DigitKey))
-  );
+  return isOperatorKey(value) || isDigitKey(value);
 }
 
 export function isControlKey(value: unknown): value is ControlKey {
