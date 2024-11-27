@@ -6,7 +6,7 @@ import { GUESS_LENGTH, GUESSES_COUNT } from './constants';
 import { GameContext } from './context';
 import { isGuessKey, KeyboardKey } from './keys';
 import { GameState } from './types';
-import { validateEquation } from './validation';
+import { isValidEquation } from './validation';
 
 // TODO Move to separate file
 const initialGameState: GameState = {
@@ -20,7 +20,7 @@ const initialGameState: GameState = {
 };
 
 export function GameProvider({ children }: { children: ReactNode }) {
-  const { equation, result: equationResult } = getDailyEquation();
+  const { result: equationResult } = getDailyEquation();
   const [guesses, setGuesses] = useState(initialGameState.guesses);
   const [keys, _setKeys] = useState(initialGameState.keys);
   const [error, setError] = useState(initialGameState.error);
@@ -35,13 +35,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const userEquation = currentGuess.guess.map((key) => key.key).join('');
-    const { isValid, error } = validateEquation(userEquation, equation, equationResult);
+    const equation = currentGuess.guess.map((key) => key.key).join('');
+    const error = isValidEquation(equation, equationResult);
 
-    if (!isValid) {
+    if (error) {
       setError(error);
+      return;
     }
-  }, [currentGuess, equation, equationResult]);
+  }, [currentGuess, equationResult]);
 
   const handleKeyPress = useCallback(
     (key: KeyboardKey) => {

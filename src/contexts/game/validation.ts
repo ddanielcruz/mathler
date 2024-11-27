@@ -1,5 +1,6 @@
 import { tokenizeEquation } from '@/utils/equations';
 
+import { GUESS_LENGTH } from './constants';
 import { isOperatorKey } from './keys';
 
 export enum ValidationError {
@@ -10,67 +11,35 @@ export enum ValidationError {
   EQUATION_RESULT = 'The equation result must be',
 }
 
-type ValidateEquationResult =
-  | {
-      isValid: true;
-      error: null;
-    }
-  | {
-      isValid: false;
-      error: string;
-    };
-
-export function validateEquation(
-  userEquation: string,
-  gameEquation: string,
-  equationResult: number,
-): ValidateEquationResult {
+export function isValidEquation(equation: string, equationResult: number): string | null {
   // Validate equation length
-  if (userEquation.length < gameEquation.length) {
-    return {
-      isValid: false,
-      error: ValidationError.NOT_ENOUGH_NUMBERS_OR_OPERATORS,
-    };
+  if (equation.length < GUESS_LENGTH) {
+    return ValidationError.NOT_ENOUGH_NUMBERS_OR_OPERATORS;
   }
 
   // Tokenize equation
-  const tokens = tokenizeEquation(userEquation, true);
+  const tokens = tokenizeEquation(equation, true);
 
   // Validate equation does not have leading zeros
   if (tokens.some((token) => token.length > 1 && token.startsWith('0'))) {
-    return {
-      isValid: false,
-      error: ValidationError.LEADING_ZEROS,
-    };
+    return ValidationError.LEADING_ZEROS;
   }
 
   // Validate equation does not have two or more operators in sequence
   if (tokens.some((token, index) => isOperatorKey(token) && isOperatorKey(tokens[index + 1]))) {
-    return {
-      isValid: false,
-      error: ValidationError.OPERATORS_IN_SEQUENCE,
-    };
+    return ValidationError.OPERATORS_IN_SEQUENCE;
   }
 
   // Validate equation does not start or end with an operator
-  if (isOperatorKey(userEquation[0]) || isOperatorKey(userEquation[userEquation.length - 1])) {
-    return {
-      isValid: false,
-      error: ValidationError.INVALID_OPERATOR_POSITION,
-    };
+  if (isOperatorKey(equation[0]) || isOperatorKey(equation[equation.length - 1])) {
+    return ValidationError.INVALID_OPERATOR_POSITION;
   }
 
   // Validate equation result is equal to the game equation result
-  const result = eval(userEquation);
+  const result = eval(equation);
   if (result !== equationResult) {
-    return {
-      isValid: false,
-      error: `${ValidationError.EQUATION_RESULT} ${equationResult}.`,
-    };
+    return `${ValidationError.EQUATION_RESULT} ${equationResult}.`;
   }
 
-  return {
-    isValid: true,
-    error: null,
-  };
+  return null;
 }
