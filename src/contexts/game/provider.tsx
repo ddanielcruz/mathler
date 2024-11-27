@@ -5,8 +5,8 @@ import { getDailyEquation } from '@/utils/equations';
 import { GUESS_LENGTH, GUESSES_COUNT } from './constants';
 import { GameContext } from './context';
 import { isGuessKey, KeyboardKey } from './keys';
-import { GameState } from './types';
-import { isValidEquation } from './validation';
+import { GameState, Guess } from './types';
+import { getGuessSolutionMap, isValidEquation } from './validation';
 
 // TODO Move to separate file
 const initialGameState: GameState = {
@@ -20,9 +20,9 @@ const initialGameState: GameState = {
 };
 
 export function GameProvider({ children }: { children: ReactNode }) {
-  const { result: equationResult } = getDailyEquation();
+  const { equation, cumulativeEquations, result: equationResult } = getDailyEquation();
   const [guesses, setGuesses] = useState(initialGameState.guesses);
-  const [keys, _setKeys] = useState(initialGameState.keys);
+  const [keys, setKeys] = useState(initialGameState.keys);
   const [error, setError] = useState(initialGameState.error);
 
   const currentGuess = useMemo(
@@ -35,14 +35,57 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const equation = currentGuess.guess.map((key) => key.key).join('');
-    const error = isValidEquation(equation, equationResult);
+    const userEquation = currentGuess.guess.map((key) => key.key).join('');
+    const error = isValidEquation(userEquation, equationResult);
 
     if (error) {
       setError(error);
       return;
     }
-  }, [currentGuess, equationResult]);
+
+    const isCorrect = userEquation === equation || cumulativeEquations.includes(userEquation);
+    const solutionMap = getGuessSolutionMap(
+      currentGuess.guess.map((guess) => guess.key),
+      equation,
+    );
+
+    // Update guess with the solution map
+    const updatedGuess: Guess = {
+      state: isCorrect ? 'correct' : 'submitted',
+      guess: solutionMap,
+    };
+
+    // Update guesses and mark the next guess as in-progress if the current guess is incorrect
+    const guessIndex = guesses.findIndex((guess) => guess === currentGuess);
+    const nextGuessIndex = guessIndex + 1;
+
+    setGuesses((prevGuesses) =>
+      prevGuesses.map((guess, index) => {
+        if (index === guessIndex) {
+          return updatedGuess;
+        }
+
+        if (!isCorrect && index === nextGuessIndex) {
+          return { ...guess, state: 'in-progress' };
+        }
+
+        return guess;
+      }),
+    );
+
+    // Update keyboard keys
+    setKeys((prevKeys) => {
+      const keysMap: typeof prevKeys = { ...prevKeys };
+      solutionMap.forEach(({ key, state }) => {
+        // Update key only if it's not present or new state is correct
+        if (!keysMap[key] || state === 'correct') {
+          keysMap[key] = state;
+        }
+      });
+
+      return keysMap;
+    });
+  }, [cumulativeEquations, currentGuess, equation, equationResult, guesses]);
 
   const handleKeyPress = useCallback(
     (key: KeyboardKey) => {
