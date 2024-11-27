@@ -34,4 +34,21 @@ describe('Game', () => {
 
     expect(screen.getByText('equals 42')).toBeInTheDocument();
   });
+
+  it('shows confetti when the game is won', () => {
+    render(
+      <GameContext.Provider
+        value={{
+          ...initialGameState,
+          status: 'won',
+          equationResult: 42,
+          onKeyPress: () => {},
+        }}
+      >
+        <Game />
+      </GameContext.Provider>,
+    );
+
+    expect(screen.getByTestId('confetti')).toBeInTheDocument();
+  });
 });

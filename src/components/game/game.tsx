@@ -1,3 +1,5 @@
+import ConfettiExplosion from 'react-confetti-explosion';
+
 import { useGame } from '@/contexts/game';
 
 import { Alert } from '../ui/alert';
@@ -5,10 +7,16 @@ import { Guesses } from './guesses';
 import { Keyboard } from './keyboard';
 
 export function Game() {
-  const { equationResult, error } = useGame();
+  const { equationResult, error, status } = useGame();
 
   return (
     <div className="flex flex-col items-center gap-8 sm:relative">
+      {status === 'won' && (
+        <div className="pointer-events-none absolute inset-y-0">
+          <ConfettiExplosion particleCount={300} data-testid="confetti" />
+        </div>
+      )}
+
       <h2 className="text-center text-xl font-medium text-white">
         Find the hidden calculation that{' '}
         <div className="mx-auto w-fit rounded-lg bg-amber-500 px-1 sm:inline-flex">

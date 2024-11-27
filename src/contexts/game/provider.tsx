@@ -15,10 +15,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState(initialGameState.error);
   const status = useMemo(() => {
     if (guesses.some((guess) => guess.state === 'correct')) {
-      return 'win';
+      return 'won';
     }
 
-    return guesses.some((guess) => guess.state === 'in-progress') ? 'in-progress' : 'lose';
+    return guesses.some((guess) => guess.state === 'in-progress') ? 'in-progress' : 'lost';
   }, [guesses]);
 
   const currentGuess = useMemo(

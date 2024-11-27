@@ -320,7 +320,7 @@ describe('GameProvider', () => {
       });
       act(() => result.current.onKeyPress('Enter'));
 
-      expect(result.current.status).toBe('win');
+      expect(result.current.status).toBe('won');
     });
 
     it('should be "lose" when all guesses are submitted but none are correct', () => {
@@ -332,7 +332,7 @@ describe('GameProvider', () => {
         act(() => result.current.onKeyPress('Enter'));
       }
 
-      expect(result.current.status).toBe('lose');
+      expect(result.current.status).toBe('lost');
     });
 
     it('should be "in-progress" when there is an in-progress guess', () => {

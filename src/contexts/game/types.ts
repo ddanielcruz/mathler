@@ -16,7 +16,7 @@ export interface Guess {
   state: GuessState;
 }
 
-export type GameStatus = 'in-progress' | 'win' | 'lose';
+export type GameStatus = 'in-progress' | 'won' | 'lost';
 
 export interface GameContextState {
   guesses: Guess[];
