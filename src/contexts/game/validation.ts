@@ -1,7 +1,8 @@
 import { tokenizeEquation } from '@/utils/equations';
 
 import { GUESS_LENGTH } from './constants';
-import { isOperatorKey } from './keys';
+import { GuessKey, isOperatorKey } from './keys';
+import { GuessValueKey } from './types';
 
 export enum ValidationError {
   NOT_ENOUGH_NUMBERS_OR_OPERATORS = 'Not enough numbers or operators.',
@@ -42,4 +43,25 @@ export function isValidEquation(equation: string, equationResult: number): strin
   }
 
   return null;
+}
+
+type GuessValueKeyWithState = {
+  [K in keyof GuessValueKey]: Exclude<GuessValueKey[K], null>;
+};
+
+export function getGuessSolutionMap(
+  guess: GuessKey[],
+  correctEquation: string,
+): GuessValueKeyWithState[] {
+  return guess.map((key, index) => {
+    let state: GuessValueKey['state'] = 'absent';
+
+    if (key === correctEquation[index]) {
+      state = 'correct';
+    } else if (correctEquation.includes(key)) {
+      state = 'present';
+    }
+
+    return { key, state };
+  });
 }
