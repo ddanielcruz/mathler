@@ -1,13 +1,16 @@
+import { DialogDescription } from '@radix-ui/react-dialog';
+
 import { Guess } from './game/guess';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 
-export function HowToPlay() {
+export function HowToPlayDialog() {
   return (
     <Dialog>
       <DialogTrigger className="text-white">How to play?</DialogTrigger>
       <DialogContent className="text-gray-700 sm:w-[calc(3.5rem*6+0.375rem*5)+3rem] sm:max-w-min">
         <DialogHeader>
           <DialogTitle className="text-blue-700">How to play?</DialogTitle>
+          <DialogDescription className="sr-only">Learn how to play the game.</DialogDescription>
         </DialogHeader>
 
         <p>Try to find the hidden calculation in 6 guesses!</p>
