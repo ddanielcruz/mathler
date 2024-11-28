@@ -5,4 +5,5 @@ export enum GameStorageKeys {
   error = `${PREFIX}/error`,
   keys = `${PREFIX}/keys`,
   timestamp = `${PREFIX}/timestamp`,
+  confetti = `${PREFIX}/confetti`,
 }

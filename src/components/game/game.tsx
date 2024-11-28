@@ -1,6 +1,8 @@
 import ConfettiExplosion from 'react-confetti-explosion';
+import { useLocalStorage } from 'usehooks-ts';
 
 import { useGame } from '@/contexts/game';
+import { GameStorageKeys } from '@/contexts/game/storage';
 
 import { Alert } from '../ui/alert';
 import { Guesses } from './guesses';
@@ -8,12 +10,17 @@ import { Keyboard } from './keyboard';
 
 export function Game() {
   const { equationResult, error, status } = useGame();
+  const [showedConfetti, setShowedConfetti] = useLocalStorage(GameStorageKeys.confetti, false);
 
   return (
     <div className="flex flex-col items-center gap-8 sm:relative">
-      {status === 'won' && (
+      {status === 'won' && !showedConfetti && (
         <div className="pointer-events-none absolute inset-y-0">
-          <ConfettiExplosion particleCount={300} data-testid="confetti" />
+          <ConfettiExplosion
+            particleCount={300}
+            data-testid="confetti"
+            onComplete={() => setShowedConfetti(true)}
+          />
         </div>
       )}
 

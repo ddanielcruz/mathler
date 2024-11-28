@@ -38,6 +38,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     if (storedTimestamp !== todayTimestamp) {
       setGuesses(initialGameState.guesses);
       setKeys(initialGameState.keys);
+      localStorage.removeItem(GameStorageKeys.confetti);
     }
 
     localStorage.setItem(GameStorageKeys.timestamp, todayTimestamp);
