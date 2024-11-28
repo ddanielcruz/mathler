@@ -4,9 +4,11 @@ import { ReactNode } from 'react';
 import { getDailyEquation } from '@/utils/equations';
 
 import { GUESS_LENGTH, GUESSES_COUNT } from './constants';
+import { initialGameState } from './context';
 import { useGame } from './hooks';
 import { DIGITS, GuessKey } from './keys';
 import { GameProvider } from './provider';
+import { GameStorageKeys } from './storage';
 import { Guess, GuessState, GuessValueKey } from './types';
 import * as validation from './validation';
 
@@ -29,6 +31,7 @@ describe('GameProvider', () => {
 
   afterEach(() => {
     isValidEquationSpy.mockClear();
+    localStorage.clear();
   });
 
   describe('initial state', () => {
@@ -348,6 +351,82 @@ describe('GameProvider', () => {
       act(() => result.current.onKeyPress('Enter'));
 
       expect(result.current.status).toBe('in-progress');
+    });
+  });
+
+  describe('localStorage', () => {
+    it('should load initial state from localStorage', () => {
+      // Set up initial state in localStorage
+      const savedGuesses = [...initialGameState.guesses];
+      savedGuesses[0] = {
+        state: 'submitted',
+        guess: [
+          { key: '1', state: 'correct' },
+          { key: '+', state: 'present' },
+          { key: '2', state: 'absent' },
+        ],
+      };
+
+      const savedKeys = {
+        '1': 'correct',
+        '+': 'present',
+        '2': 'absent',
+      };
+
+      localStorage.setItem(GameStorageKeys.guesses, JSON.stringify(savedGuesses));
+      localStorage.setItem(GameStorageKeys.keys, JSON.stringify(savedKeys));
+
+      const { result } = renderHook(() => useGame(), { wrapper });
+
+      // Verify all state is loaded correctly
+      expect(result.current.guesses).toEqual(savedGuesses);
+      expect(result.current.keys).toEqual(savedKeys);
+    });
+
+    it('should persist state changes to localStorage', () => {
+      const { result } = renderHook(() => useGame(), { wrapper });
+
+      // Simulate playing a turn
+      act(() => result.current.onKeyPress('1'));
+      act(() => result.current.onKeyPress('+'));
+      act(() => result.current.onKeyPress('2'));
+      act(() => result.current.onKeyPress('Enter'));
+
+      // Verify guesses are saved
+      const savedGuesses = JSON.parse(localStorage.getItem(GameStorageKeys.guesses) || '[]');
+      expect(savedGuesses).toEqual(result.current.guesses);
+
+      // Verify keys are saved
+      const savedKeys = JSON.parse(localStorage.getItem(GameStorageKeys.keys) || '{}');
+      expect(savedKeys).toEqual(result.current.keys);
+    });
+
+    it('should clear the game state when the daily equation changes', () => {
+      // Set up initial state in localStorage
+      const savedGuesses = [...initialGameState.guesses];
+      savedGuesses[0] = {
+        state: 'submitted',
+        guess: [
+          { key: '1', state: 'correct' },
+          { key: '+', state: 'present' },
+          { key: '2', state: 'absent' },
+        ],
+      };
+
+      const savedKeys = {
+        '1': 'correct',
+        '+': 'present',
+        '2': 'absent',
+      };
+
+      localStorage.setItem(GameStorageKeys.guesses, JSON.stringify(savedGuesses));
+      localStorage.setItem(GameStorageKeys.keys, JSON.stringify(savedKeys));
+      localStorage.setItem(GameStorageKeys.timestamp, '0');
+
+      const { result } = renderHook(() => useGame(), { wrapper });
+
+      expect(result.current.guesses).toEqual(initialGameState.guesses);
+      expect(result.current.keys).toEqual(initialGameState.keys);
     });
   });
 });

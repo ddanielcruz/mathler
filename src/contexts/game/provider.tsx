@@ -1,18 +1,22 @@
-import { ReactNode, useCallback, useMemo, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocalStorage } from 'usehooks-ts';
 
+import { getTodayTimestamp } from '@/utils/dates';
 import { getDailyEquation } from '@/utils/equations';
 
 import { GUESS_LENGTH } from './constants';
 import { GameContext, initialGameState } from './context';
 import { isGuessKey, KeyboardKey } from './keys';
+import { GameStorageKeys } from './storage';
 import { Guess } from './types';
 import { getGuessSolutionMap, isValidEquation } from './validation';
 
 export function GameProvider({ children }: { children: ReactNode }) {
   const { equation, cumulativeEquations, result: equationResult } = getDailyEquation();
-  const [guesses, setGuesses] = useState(initialGameState.guesses);
-  const [keys, setKeys] = useState(initialGameState.keys);
+  const [guesses, setGuesses] = useLocalStorage(GameStorageKeys.guesses, initialGameState.guesses);
+  const [keys, setKeys] = useLocalStorage(GameStorageKeys.keys, initialGameState.keys);
   const [error, setError] = useState(initialGameState.error);
+
   const status = useMemo(() => {
     if (guesses.some((guess) => guess.state === 'correct')) {
       return 'won';
@@ -21,16 +25,30 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return guesses.some((guess) => guess.state === 'in-progress') ? 'in-progress' : 'lost';
   }, [guesses]);
 
-  const currentGuess = useMemo(
-    () => guesses.find((guess) => guess.state === 'in-progress') ?? null,
-    [guesses],
-  );
+  const currentGuessIndex = useMemo(() => {
+    const index = guesses.findIndex((guess) => guess.state === 'in-progress');
+    return index !== -1 ? index : null;
+  }, [guesses]);
+
+  // Clear the game state when the daily equation changes
+  useEffect(() => {
+    const todayTimestamp = getTodayTimestamp().toString();
+    const storedTimestamp = localStorage.getItem(GameStorageKeys.timestamp) || todayTimestamp;
+
+    if (storedTimestamp !== todayTimestamp) {
+      setGuesses(initialGameState.guesses);
+      setKeys(initialGameState.keys);
+    }
+
+    localStorage.setItem(GameStorageKeys.timestamp, todayTimestamp);
+  }, [setGuesses, setKeys]);
 
   const handleValidateEquation = useCallback(() => {
-    if (!currentGuess) {
+    if (currentGuessIndex === null) {
       return;
     }
 
+    const currentGuess = guesses[currentGuessIndex];
     const userEquation = currentGuess.guess.map((key) => key.key).join('');
     const error = isValidEquation(userEquation, equationResult);
 
@@ -52,12 +70,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     };
 
     // Update guesses and mark the next guess as in-progress if the current guess is incorrect
-    const guessIndex = guesses.findIndex((guess) => guess === currentGuess);
-    const nextGuessIndex = guessIndex + 1;
-
+    const nextGuessIndex = currentGuessIndex + 1;
     setGuesses((prevGuesses) =>
       prevGuesses.map((guess, index) => {
-        if (index === guessIndex) {
+        if (index === currentGuessIndex) {
           return updatedGuess;
         }
 
@@ -81,11 +97,20 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       return keysMap;
     });
-  }, [cumulativeEquations, currentGuess, equation, equationResult, guesses]);
+  }, [
+    cumulativeEquations,
+    currentGuessIndex,
+    equation,
+    equationResult,
+    guesses,
+    setError,
+    setGuesses,
+    setKeys,
+  ]);
 
   const handleKeyPress = useCallback(
     (key: KeyboardKey) => {
-      if (!currentGuess) {
+      if (currentGuessIndex === null) {
         return;
       }
 
@@ -98,7 +123,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       }
 
       // Append key to current guess
+      const currentGuess = guesses[currentGuessIndex];
       const updatedGuess = [...currentGuess.guess];
+
       if (isGuessKey(key)) {
         if (updatedGuess.length < GUESS_LENGTH) {
           updatedGuess.push({ key, state: null });
@@ -110,12 +137,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       // Update the guesses
       setGuesses((prevGuesses) =>
-        prevGuesses.map((guess) =>
-          guess === currentGuess ? { ...guess, guess: updatedGuess } : guess,
-        ),
+        prevGuesses.map((guess, index) => {
+          if (index === currentGuessIndex) {
+            return { ...guess, guess: updatedGuess };
+          }
+
+          return guess;
+        }),
       );
     },
-    [currentGuess, handleValidateEquation],
+    [currentGuessIndex, guesses, handleValidateEquation, setError, setGuesses],
   );
 
   return (

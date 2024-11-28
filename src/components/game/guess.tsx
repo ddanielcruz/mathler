@@ -17,7 +17,7 @@ export function Guess({ guess: { guess, state } }: GuessProps) {
   });
 
   return (
-    <div className="flex gap-1.5" data-testid="guess" data-state={state}>
+    <div className="relative flex gap-1.5" data-testid="guess" data-state={state}>
       {guessKeys.map((key, index) => (
         <GuessKey key={index} active={state === 'in-progress'} {...key} />
       ))}
