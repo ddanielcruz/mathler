@@ -6,7 +6,19 @@ import { cn } from '@/lib/tailwind';
 
 const Dialog = DialogPrimitive.Root;
 
-const DialogTrigger = DialogPrimitive.Trigger;
+const DialogTrigger = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Trigger>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Trigger
+    ref={ref}
+    className={cn(
+      'rounded-md p-2 font-medium text-white transition-colors hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:px-4',
+      className,
+    )}
+    {...props}
+  />
+));
 
 const DialogPortal = DialogPrimitive.Portal;
 

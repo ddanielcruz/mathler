@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 export function HowToPlayDialog() {
   return (
     <Dialog>
-      <DialogTrigger className="text-white">How to play?</DialogTrigger>
+      <DialogTrigger>How to Play</DialogTrigger>
       <DialogContent className="text-gray-700 sm:w-[calc(3.5rem*6+0.375rem*5)+3rem] sm:max-w-min">
         <DialogHeader>
           <DialogTitle className="text-blue-700">How to play?</DialogTitle>
@@ -20,6 +20,7 @@ export function HowToPlayDialog() {
         </p>
 
         <Guess
+          className="mx-auto"
           guess={{
             guess: [
               { key: '5', state: 'present' },

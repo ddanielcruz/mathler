@@ -1,19 +1,19 @@
 import { StatisticsProvider } from '@/contexts/statistics';
 
 import { Game } from './components/game';
-import { HowToPlayDialog } from './components/how-to-play-dialog';
-import { StatisticsDialog } from './components/statistics-dialog';
+import { Header } from './components/header';
 import { GameProvider } from './contexts/game';
 
 export function App() {
   return (
     <StatisticsProvider>
       <GameProvider>
-        <HowToPlayDialog />
-        <StatisticsDialog />
-        <main className="flex min-h-svh flex-col items-center justify-center px-4">
-          <Game />
-        </main>
+        <div className="sm:relative">
+          <Header />
+          <main className="flex min-h-[calc(100svh-4rem)] flex-col items-center justify-center p-4 sm:min-h-svh">
+            <Game />
+          </main>
+        </div>
       </GameProvider>
     </StatisticsProvider>
   );

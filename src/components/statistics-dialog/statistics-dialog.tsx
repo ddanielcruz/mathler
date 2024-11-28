@@ -24,7 +24,7 @@ export function StatisticsDialog() {
 
   return (
     <Dialog>
-      <DialogTrigger className="text-white">Stats</DialogTrigger>
+      <DialogTrigger>Stats</DialogTrigger>
       <DialogContent className="flex flex-col gap-4 text-gray-700">
         <DialogHeader>
           <DialogTitle className="text-blue-700">Statistics</DialogTitle>
