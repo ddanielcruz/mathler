@@ -1,6 +1,7 @@
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
+import { useStatistics } from '@/contexts/statistics';
 import { getTodayTimestamp } from '@/utils/dates';
 import { getDailyEquation } from '@/utils/equations';
 
@@ -16,6 +17,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [guesses, setGuesses] = useLocalStorage(GameStorageKeys.guesses, initialGameState.guesses);
   const [keys, setKeys] = useLocalStorage(GameStorageKeys.keys, initialGameState.keys);
   const [error, setError] = useState(initialGameState.error);
+  const { addGameResult } = useStatistics();
 
   const status = useMemo(() => {
     if (guesses.some((guess) => guess.state === 'correct')) {
@@ -98,13 +100,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       return keysMap;
     });
+
+    // Update statistics when game is won or lost
+    const isGameOver = isCorrect || nextGuessIndex >= guesses.length;
+    if (isGameOver) {
+      addGameResult(isCorrect, currentGuessIndex + 1);
+    }
   }, [
-    cumulativeEquations,
+    addGameResult,
     currentGuessIndex,
+    cumulativeEquations,
     equation,
     equationResult,
     guesses,
-    setError,
     setGuesses,
     setKeys,
   ]);

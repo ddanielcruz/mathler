@@ -1,6 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { ReactNode } from 'react';
 
+import { StatisticsProvider, useStatistics } from '@/contexts/statistics';
 import { getDailyEquation } from '@/utils/equations';
 
 import { GUESS_LENGTH, GUESSES_COUNT } from './constants';
@@ -15,7 +16,11 @@ import * as validation from './validation';
 const isValidEquationSpy = vi.spyOn(validation, 'isValidEquation');
 
 function wrapper({ children }: { children: ReactNode }) {
-  return <GameProvider>{children}</GameProvider>;
+  return (
+    <StatisticsProvider>
+      <GameProvider>{children}</GameProvider>
+    </StatisticsProvider>
+  );
 }
 
 function createEmptyGuess(state: GuessState): Guess {
@@ -309,6 +314,36 @@ describe('GameProvider', () => {
         act(() => result.current.onKeyPress('Enter'));
 
         expect(result.current.keys).toEqual({});
+      });
+
+      it('should update statistics when game is won', () => {
+        const { result } = renderHook(() => useGame(), { wrapper });
+
+        // Submit correct guess
+        equation.split('').forEach((key) => {
+          act(() => result.current.onKeyPress(key as GuessKey));
+        });
+        act(() => result.current.onKeyPress('Enter'));
+
+        const statisticsResult = renderHook(() => useStatistics(), { wrapper });
+        expect(statisticsResult.result.current.statistics.gamesWon).toBe(1);
+        expect(statisticsResult.result.current.statistics.gamesPlayed).toBe(1);
+        expect(statisticsResult.result.current.statistics.currentStreak).toBe(1);
+      });
+
+      it('should update statistics when game is lost', () => {
+        const { result } = renderHook(() => useGame(), { wrapper });
+
+        // Submit all guesses incorrectly
+        for (let i = 0; i < GUESSES_COUNT; i++) {
+          isValidEquationSpy.mockReturnValueOnce(null);
+          act(() => result.current.onKeyPress('Enter'));
+        }
+
+        const statisticsResult = renderHook(() => useStatistics(), { wrapper });
+        expect(statisticsResult.result.current.statistics.gamesWon).toBe(0);
+        expect(statisticsResult.result.current.statistics.gamesPlayed).toBe(1);
+        expect(statisticsResult.result.current.statistics.currentStreak).toBe(0);
       });
     });
   });

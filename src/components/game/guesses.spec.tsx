@@ -4,11 +4,16 @@ import { describe, expect, it } from 'vitest';
 
 import { GameProvider } from '@/contexts/game';
 import { GUESSES_COUNT } from '@/contexts/game/constants';
+import { StatisticsProvider } from '@/contexts/statistics';
 
 import { Guesses } from './guesses';
 
 function wrapper({ children }: { children: ReactNode }) {
-  return <GameProvider>{children}</GameProvider>;
+  return (
+    <StatisticsProvider>
+      <GameProvider>{children}</GameProvider>
+    </StatisticsProvider>
+  );
 }
 
 describe('Guesses', () => {
