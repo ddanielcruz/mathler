@@ -39,3 +39,7 @@ pnpm install
 ```bash
 pnpm dev
 ```
+
+## Acknowledgments
+
+Inspired by [Wordle](https://www.nytimes.com/games/wordle/index.html) and [Mathler](https://www.math24.net/math-24-game/).
