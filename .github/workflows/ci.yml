@@ -5,6 +5,17 @@ on:
     branches:
       - main
 
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build
@@ -49,6 +60,15 @@ jobs:
       - name: Build
         run: pnpm build
 
-      # Future deployment steps can be added here
-      # - name: Deploy
-      #   run: echo "Deploy step will go here"
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload dist folder
+          path: './dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
